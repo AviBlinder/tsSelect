@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "rosman <- read.csv(\"D:/Kaggle/Rossman Store Sales/Data/train.csv\")\n\nros1 <- subset(rosman,rosman$Store == 1)\n\nros1 <- ros1[order(ros1$Date),]\nros1$Sales[ros1$Sales == 0] <- 0.1\n\nros1_ts <- as.ts(ros1$Sales)\n\n\n\nsave(ros1_ts,file = \"data/ros1_ts.rda\")\n\nprompt(ros1_ts)\n\na <- ros1_ts\nlibrary(forecast)\nb <- run_models(a)\n",
+    "created" : 1475440334083.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1916579913",
+    "id" : "CDA18172",
+    "lastKnownWriteTime" : 1475442323,
+    "last_content_update" : 1475442323509,
+    "path" : "D:/Data Science Projects/R_Packages/rosman_sales_data_file.r",
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

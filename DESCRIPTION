@@ -1,0 +1,14 @@
+Package: tsSelect
+Type: Package
+Title: Execution of Time Series Models
+Version: 0.1.7
+Author: Avi Blinder  <aviblinder@gmail.com>
+Maintainer: Avi Blinder <aviblinder@gmail.com>
+Description: Execution of various time series models and choosing the best one
+    either by a specific error metric or by picking the best one by majority vote.
+    The models are based on the "forecast" package, written by Prof. Rob Hyndman.
+License: GPL-2
+LazyData: TRUE
+Depends: R (>= 3.0.2)
+Imports: forecast
+RoxygenNote: 5.0.1

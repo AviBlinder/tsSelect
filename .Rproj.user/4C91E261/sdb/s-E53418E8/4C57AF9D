@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "Package: tsSelect\nType: Package\nTitle: Execution of Time Series Models\nVersion: 0.1.7\nAuthor: Avi Blinder  <aviblinder@gmail.com>\nMaintainer: Avi Blinder <aviblinder@gmail.com>\nDescription: Execution of various time series models and choosing the best one\n    either by a specific error metric or by picking the best one by majority vote.\n    The models are based on the \"forecast\" package, written by Prof. Rob Hyndman.\nLicense: GPL-2\nLazyData: TRUE\nDepends: R (>= 3.0.2)\nImports: forecast\nRoxygenNote: 5.0.1\n",
+    "created" : 1475438408057.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3698621188",
+    "id" : "4C57AF9D",
+    "lastKnownWriteTime" : 1475442349,
+    "last_content_update" : 1475442349119,
+    "path" : "D:/Data Science Projects/R_Packages/tsSelect/DESCRIPTION",
+    "project_path" : "DESCRIPTION",
+    "properties" : {
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "dcf"
+}
