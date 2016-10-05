@@ -126,7 +126,6 @@ run_models <- function(ts1,accuracy_measure = NULL){
   ac_holt4$model <- "Holt_exponential_damped"
   row.names(ac_holt4) <- NULL
 
-
   ac_auto_arima1     <- data.frame(accuracy(fit_auto_arima1))
   ac_auto_arima1$model <- "Auto_Arima"
   row.names(ac_auto_arima1) <- NULL
