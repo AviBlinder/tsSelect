@@ -1,8 +1,8 @@
-"tsSelect Package - Choose the best time series model" 
+**"tsSelect Package - Pick the best time series model" **
 
   This package has as input a Time Series object.
   
-  The first step is fitting a series of model:
+The first step fits a series of models:
   
   - Mean model
   - Naive model (all forecasts = last observation)
@@ -16,11 +16,18 @@
   
   - ARIMA (with and without stepwise selection)
   
-  The second step is choosing the lowest error measures, either by a specific measure
-  or by majority vote among all possible error measures.
+The second step picks the model with lowest error measures, either by a specific measure or by majority vote, among all possible error measures.
   
-  The possible error measures are:
+The different error measures are:
   ME, RMSE, MAE, MPE ,MAPE, MASE, ACF1
+  
+
+***Execution example:***
+
+library(tsSelect)
+
+run_models(ts_object)
+  
   
   
   
