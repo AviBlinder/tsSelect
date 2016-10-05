@@ -1,4 +1,4 @@
-**"tsSelect Package - Pick the best time series model" **
+<h3> "tsSelect Package - Pick the best time series model" </h3>
 
   This package has as input a Time Series object.
   
