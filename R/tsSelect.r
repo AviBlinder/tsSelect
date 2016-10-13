@@ -19,34 +19,47 @@ run_models <- function(ts1,accuracy_measure = NULL){
 
   check_object(ts1)
 
+  ##Check Auto-Correlations
+  acf <- Acf(ts1)
+  acf_max <- sort(acf$acf,decreasing = T)[2]
+  acf_treshold <- abs(2/length(ts1))/0.1
+  #filter 'white noise" series
+  if (acf_max < acf_treshold){
+    cat ("white noise !!")
+    stop
+  }
+
   ##################################################################################
   #Step 1: Fit models
+
+  fit_tbats <- tbats(ts1)
+  seasonal <- !is.null(fit_tbats$seasonal)
+
+
   fit_benchm1 <- meanf(ts1,6)  # Mean forecast (x, h) h = horizon
 
   fit_benchm2 <- naive(ts1,6)  # Navive forecast (all forecasts = last observation)
 
-  fit_benchm3 <- snaive(ts1,6) # Seassonal Naive
-  #    (each forecast to be equal to the last observed value
-  #      from the same season)
+  if(seasonal){
+    fit_benchm3 <- snaive(ts1,6) # Seassonal Naive
 
-  fit_benchm4 <- rwf(ts1,6,drift = TRUE) #Drift method - adds a "trend" over time to the naive method
-
-  fit_lm1 <- tslm(ts1 ~ trend)
-
-  #filter 'white noise" series
-  if (summary(fit_lm1)$r.squared > 0.1)
-  {
     fit_lm2 <- tslm(ts1 ~ trend + season)
-
-    fit_ses <- ses(ts1)
-
-    fit_ets <- ets(ts1)
 
     fit_hw1    <- hw(ts1,seasonal="additive")
 
     fit_hw2    <- hw(ts1,seasonal="multiplicative")
 
-  }
+    }
+    #    (each forecast to be equal to the last observed value
+    #      from the same season)
+
+  fit_benchm4 <- rwf(ts1,6,drift = TRUE) #Drift method - adds a "trend" over time to the naive method
+
+  fit_lm1 <- tslm(ts1 ~ trend)
+
+  fit_ses <- ses(ts1)
+
+  fit_ets <- ets(ts1)
 
   fit_holt1 <- holt(ts1)
 
@@ -71,10 +84,6 @@ run_models <- function(ts1,accuracy_measure = NULL){
   ac_benchm2$model <- "naive"
   row.names(ac_benchm2) <- NULL
   #
-  ac_benchm3 <- data.frame(accuracy(fit_benchm3))
-  ac_benchm3$model <- "snaive"
-  row.names(ac_benchm3) <- NULL
-  #
   ac_benchm4 <- data.frame(accuracy(fit_benchm4))
   ac_benchm4$model <- "rwf"
   row.names(ac_benchm4) <- NULL
@@ -84,21 +93,30 @@ run_models <- function(ts1,accuracy_measure = NULL){
   ac_lm1$model <- "lm_with_trend"
   row.names(ac_lm1) <- NULL
 
+  ac_tbats <- data.frame(accuracy(fit_tbats))
+  ac_tbats$model <- "tbats"
+  row.names(ac_tbats) <- NULL
+
   #
-  if (summary(fit_lm1)$r.squared > 0.1){
+  ac_ets     <- data.frame(accuracy(fit_ets))
+  ac_ets$model <- "ets"
+  row.names(ac_ets) <- NULL
+  #
+  ac_ses     <- data.frame(accuracy(fit_ses))
+  ac_ses$model <- "ses"
+  row.names(ac_ses) <- NULL
+
+  #
+  if (seasonal){
+    ac_benchm3 <- data.frame(accuracy(fit_benchm3))
+    ac_benchm3$model <- "snaive"
+    row.names(ac_benchm3) <- NULL
+
     ac_lm2     <- data.frame(accuracy(fit_lm2))
     ac_lm2$ACF1 <- NA
     ac_lm2$model <- "lm_with_trend_and_season"
     row.names(ac_lm2) <- NULL
 
-    #
-    ac_ets     <- data.frame(accuracy(fit_ets))
-    ac_ets$model <- "ets"
-    row.names(ac_ets) <- NULL
-    #
-    ac_ses     <- data.frame(accuracy(fit_ses))
-    ac_ses$model <- "ses"
-    row.names(ac_ses) <- NULL
     #
     ac_hw1     <- data.frame(accuracy(fit_hw1))
     ac_hw1$model <- "Holt-Winters_additive"
@@ -107,6 +125,7 @@ run_models <- function(ts1,accuracy_measure = NULL){
     ac_hw2     <- data.frame(accuracy(fit_hw2))
     ac_hw2$model <- "Holt-Winters_multiplicative"
     row.names(ac_hw2) <- NULL
+
   }
   #
 
@@ -137,12 +156,12 @@ run_models <- function(ts1,accuracy_measure = NULL){
   ##################################################################################
   #Step 3: Combine models and pick best one
 
-  if (summary(fit_lm1)$r.squared > 0.1){
+  if (seasonal){
 
     accuracies <- rbind(ac_benchm1,ac_benchm2,ac_benchm3,ac_benchm4,
                         ac_lm1,ac_lm2,ac_ets,ac_ses,
                         ac_holt1,ac_holt2,ac_holt3,ac_holt4,ac_hw1,ac_hw2,
-                        ac_auto_arima1,ac_auto_arima2)
+                        ac_auto_arima1,ac_auto_arima2,ac_tbats)
     all_models <-   list("meanf"    =    fit_benchm1 ,
                          "naive"         =    fit_benchm2 ,
                          "snaive"        =    fit_benchm3 ,
@@ -158,16 +177,16 @@ run_models <- function(ts1,accuracy_measure = NULL){
                          "Holt_damped"       =    fit_holt3 ,
                          "Holt_exponential_damped" =    fit_holt4 ,
                          "Auto_Arima"        =    fit_auto_arima1 ,
-                         "Auto_Arima_No_Stepwise" =    fit_auto_arima2)
+                         "Auto_Arima_No_Stepwise" =    fit_auto_arima2,
+                         "TBATS model" = fit_tbats)
 
   } else {
-    accuracies <- rbind(ac_benchm1,ac_benchm2,ac_benchm3,ac_benchm4,
+    accuracies <- rbind(ac_benchm1,ac_benchm2,ac_benchm4,
                         ac_lm1,
                         ac_holt1,ac_holt2,ac_holt3,ac_holt4,
-                        ac_auto_arima1,ac_auto_arima2)
+                        ac_auto_arima1,ac_auto_arima2,ac_tbats)
     all_models <-   list("meanf"    =    fit_benchm1 ,
                          "naive"         =    fit_benchm2 ,
-                         "snaive"        =    fit_benchm3 ,
                          "rwf"           =    fit_benchm4 ,
                          "lm_with_trend" =    fit_lm1     ,
                          "Holt_simple"   =    fit_holt1 ,
@@ -175,7 +194,8 @@ run_models <- function(ts1,accuracy_measure = NULL){
                          "Holt_damped"       =    fit_holt3 ,
                          "Holt_exponential_damped" =    fit_holt4 ,
                          "Auto_Arima"        =    fit_auto_arima1 ,
-                         "Auto_Arima_No_Stepwise" =    fit_auto_arima2)
+                         "Auto_Arima_No_Stepwise" =    fit_auto_arima2,
+                         "TBATS model" = fit_tbats)
 
   }
 
